@@ -8,6 +8,7 @@ import { setCommission } from '../../store/actions/commissionActions'
 import { getCommission } from '../../services/ApiService'
 import { useNavigate } from 'react-router-dom'
 import './Form.css'
+import { clearApiError, setApiError } from './../../store/actions/errorActions'
 
 const FormSchema: Yup.ObjectSchema<any> = Yup.object().shape({
   date: Yup.date()
@@ -42,19 +43,33 @@ const FormComponent: React.FC = () => {
     dispatch(setCommission(value))
   }
 
+  const onSetApiError = (value: string) => {
+    dispatch(setApiError(value))
+  }
+
+  const onClearApiError = () => {
+    dispatch(clearApiError())
+  }
+
   const retrieveCommissionfromAPI = async (date:string, amount:string, currency: string, clientId: number):Promise<string> => {
     const result = await getCommission({ date: date, amount: amount, currency: currency, client_id: clientId })
     return result.amount
   }
 
   const onSubmit = async (values: tFormValues, actions: FormikHelpers<tFormValues>) => {
-    const commission = await retrieveCommissionfromAPI(values.date.split('T')[0], values.amount, values.currency, Number(values.client_id))
-    onSetComission(commission)
+    onClearApiError()
+    try {
+      const commission = await retrieveCommissionfromAPI(values.date.split('T')[0], values.amount, values.currency, Number(values.client_id))
+      onSetComission(commission)
 
-    actions.setSubmitting(false)
-    actions.resetForm()
+      actions.setSubmitting(false)
+      actions.resetForm()
 
-    navigate('/result')
+      navigate('/result')
+    } catch (error: any) {
+      console.log(error)
+      onSetApiError(error)
+    }
   }
 
   return (
