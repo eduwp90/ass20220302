@@ -1,7 +1,7 @@
 export type tOptions = {
   method: string;
   headers: {
-    "content-Type": string;
+    'content-Type': string;
   };
   body: string;
 }

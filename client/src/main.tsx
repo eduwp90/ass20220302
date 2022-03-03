@@ -5,8 +5,8 @@ import './index.css'
 import App from './App'
 import { Provider } from 'react-redux'
 import { store } from './store/store'
-import Form from './components/Form/Form'
-import Commission from './components/Commission/Commission'
+import FormComponent from './components/Form/Form'
+import Result from './components/Result/Result'
 
 ReactDOM.render(
   <BrowserRouter>
@@ -14,8 +14,8 @@ ReactDOM.render(
       <Routes>
         <Route path='/' element={<App/>}>
           <Route index element={<Navigate to='/form' />} />
-          <Route path='form' element={<Form/>}/>
-          <Route path='commission' element={<Commission/>}/>
+          <Route path='form' element={<FormComponent/>}/>
+          <Route path='result' element={<Result/>}/>
         </Route>
       </Routes>
     </Provider>
