@@ -1,9 +1,10 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
+import { rootState } from '../../store/store'
 import './Result.css'
 
 const Result:React.FC = () => {
-  const commission = useSelector((state) => state.commission)
+  const commission = useSelector<rootState, string>((state) => state.commission)
   console.log(commission)
 
   return (

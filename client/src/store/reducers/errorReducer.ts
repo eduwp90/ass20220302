@@ -1,6 +1,6 @@
 import { Action } from '../actions/commissionActions'
 
-interface errorState {
+export interface errorState {
   error: boolean,
   msg: string,
 }

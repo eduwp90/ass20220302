@@ -1,14 +1,17 @@
 import React from 'react'
 import { Form, Input, DatePicker, FormItem, SubmitButton, Select } from 'formik-antd'
+import { Alert } from 'antd'
 import { Formik, FormikHelpers, FormikProps } from 'formik'
 import * as Yup from 'yup'
 import { tFormValues } from './FormTypes'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setCommission } from '../../store/actions/commissionActions'
 import { getCommission } from '../../services/ApiService'
 import { useNavigate } from 'react-router-dom'
 import './Form.css'
 import { clearApiError, setApiError } from './../../store/actions/errorActions'
+import { rootState } from './../../store/store'
+import { errorState } from '../../store/reducers/errorReducer'
 
 const FormSchema: Yup.ObjectSchema<any> = Yup.object().shape({
   date: Yup.date()
@@ -38,6 +41,7 @@ const selectAfter: JSX.Element = (
 const FormComponent: React.FC = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const apiError = useSelector<rootState, errorState>((state) => state.apiError)
 
   const onSetComission = (value: string) => {
     dispatch(setCommission(value))
@@ -68,7 +72,7 @@ const FormComponent: React.FC = () => {
       navigate('/result')
     } catch (error: any) {
       console.log(error)
-      onSetApiError(error)
+      onSetApiError('Error connecting to commission API')
     }
   }
 
@@ -99,7 +103,8 @@ const FormComponent: React.FC = () => {
               <FormItem name="date" label="Transfer Date" >
                 <DatePicker className='date-picker' name='date' format='YYYY-MM-DD' disabled={props.isSubmitting}/>
               </FormItem>
-              <SubmitButton>Submit</SubmitButton>
+              {apiError.error && <Alert className='alert' message={apiError.msg} type="error" showIcon />}
+              <SubmitButton >Submit</SubmitButton>
 
             </div>
 
