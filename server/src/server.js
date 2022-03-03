@@ -8,7 +8,7 @@ const apiVersion = process.env.API_VERSION || 'v1'
 
 const router = require(`./api/${apiVersion}/routes/router`)
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3001
 
 app.use(cors())
 app.use(express.json())
