@@ -12,6 +12,7 @@ import './Form.css'
 import { clearApiError, setApiError } from './../../store/actions/errorActions'
 import { rootState } from './../../store/store'
 import { errorState } from '../../store/reducers/errorReducer'
+import moment from 'moment'
 
 const FormSchema: Yup.ObjectSchema<any> = Yup.object().shape({
   date: Yup.date()
@@ -19,7 +20,8 @@ const FormSchema: Yup.ObjectSchema<any> = Yup.object().shape({
   amount: Yup.number()
     .typeError('Amount must be a number')
     .required('Required')
-    .positive('No negative numbers'),
+    .positive('No negative numbers')
+    .moreThan(0, 'Amount bigger than 0'),
   currency: Yup.string().required('Required'),
   client_id: Yup.number()
     .typeError('Client ID must be a number')
@@ -101,7 +103,7 @@ const FormComponent: React.FC = () => {
                 <Input name="amount" placeholder={'1'} addonAfter={selectAfter} disabled={props.isSubmitting}/>
               </FormItem>
               <FormItem name="date" label="Transfer Date" >
-                <DatePicker className='date-picker' name='date' format='YYYY-MM-DD' disabled={props.isSubmitting}/>
+                <DatePicker className='date-picker' name='date' format='YYYY-MM-DD' disabled={props.isSubmitting} disabledDate={(current) => current && current > moment().endOf('day')}/>
               </FormItem>
               {apiError.error && <Alert className='alert' message={apiError.msg} type="error" showIcon />}
               <SubmitButton >Submit</SubmitButton>
