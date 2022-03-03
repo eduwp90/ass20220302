@@ -1,12 +1,13 @@
 import React from 'react'
 import { Form, Input, DatePicker, FormItem, SubmitButton, Select } from 'formik-antd'
 import { Formik, FormikHelpers, FormikProps } from 'formik'
-import { Button, Row, Col } from 'antd'
 import * as Yup from 'yup'
 import { tFormValues } from './FormTypes'
 import { useDispatch } from 'react-redux'
 import { setCommission } from '../../store/actions/commissionActions'
 import { getCommission } from '../../services/ApiService'
+import { useNavigate } from 'react-router-dom'
+import './Form.css'
 
 const FormSchema: Yup.ObjectSchema<any> = Yup.object().shape({
   date: Yup.date()
@@ -35,13 +36,25 @@ const selectAfter: JSX.Element = (
 
 const FormComponent: React.FC = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const onSetComission = (value: string) => {
     dispatch(setCommission(value))
   }
 
-  const retrieveCommissionfromAPI = async (date:string, amount:string, currency: string, clientId: number) => {
-    console.log(await getCommission({ date: date, amount: amount, currency: currency, client_id: clientId }))
+  const retrieveCommissionfromAPI = async (date:string, amount:string, currency: string, clientId: number):Promise<string> => {
+    const result = await getCommission({ date: date, amount: amount, currency: currency, client_id: clientId })
+    return result.amount
+  }
+
+  const onSubmit = async (values: tFormValues, actions: FormikHelpers<tFormValues>) => {
+    const commission = await retrieveCommissionfromAPI(values.date.split('T')[0], values.amount, values.currency, Number(values.client_id))
+    onSetComission(commission)
+
+    actions.setSubmitting(false)
+    actions.resetForm()
+
+    navigate('/result')
   }
 
   return (
@@ -52,19 +65,13 @@ const FormComponent: React.FC = () => {
           currency: 'EUR',
           client_id: ''
         }}
-        onSubmit={(values: tFormValues, actions: FormikHelpers<tFormValues>) => {
-          console.log(values)
-          onSetComission('hello')
-          retrieveCommissionfromAPI(values.date.split('T')[0], values.amount, values.currency, Number(values.client_id))
-
-          // actions.setSubmitting(false)
-          // actions.resetForm()
-        }}
+        onSubmit={onSubmit}
         validationSchema={FormSchema}
         render={(props: FormikProps<tFormValues>) => (
           <Form layout='vertical'>
-            <div style={{ flex: 1 }} />
-            <div style={{ background: 'white', flex: 1, padding: 40 }}>
+
+            <div className='form-container' >
+              <h2>Calculate commission:</h2>
               <FormItem
                 name="client_id"
                 label="Client ID"
@@ -75,16 +82,10 @@ const FormComponent: React.FC = () => {
                 <Input name="amount" placeholder={'1'} addonAfter={selectAfter} disabled={props.isSubmitting}/>
               </FormItem>
               <FormItem name="date" label="Transfer Date" >
-                <DatePicker name='date' format='YYYY-MM-DD' disabled={props.isSubmitting}/>
+                <DatePicker className='date-picker' name='date' format='YYYY-MM-DD' disabled={props.isSubmitting}/>
               </FormItem>
+              <SubmitButton>Submit</SubmitButton>
 
-              <Row style={{ marginTop: 60 }}>
-                <Col offset={8}>
-                  <Button.Group>
-                    <SubmitButton>Submit</SubmitButton>
-                  </Button.Group>
-                </Col>
-              </Row>
             </div>
 
           </Form>

@@ -1,10 +1,11 @@
 import React from 'react'
-import 'antd/dist/antd.css'
+import './App.css'
+
 import { Outlet } from 'react-router-dom'
 
 function App () {
   return (
-    <div className="App">
+    <div className="main-container">
       <Outlet />
     </div>
   )

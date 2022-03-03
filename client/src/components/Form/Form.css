@@ -1,0 +1,10 @@
+.form-container {
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+
+}
+
+.date-picker {
+  width: 100%;
+}
