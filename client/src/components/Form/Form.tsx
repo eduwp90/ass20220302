@@ -6,6 +6,7 @@ import * as Yup from 'yup'
 import { tFormValues } from './FormTypes'
 import { useDispatch } from 'react-redux'
 import { setCommission } from '../../store/actions/commissionActions'
+import { getCommission } from '../../services/ApiService'
 
 const FormSchema: Yup.ObjectSchema<any> = Yup.object().shape({
   date: Yup.date()
@@ -19,6 +20,7 @@ const FormSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     .typeError('Client ID must be a number')
     .required('Required')
     .positive('No negative numbers')
+    .integer('No decimals allowed')
 })
 
 // eslint-disable-next-line no-undef
@@ -38,6 +40,10 @@ const FormComponent: React.FC = () => {
     dispatch(setCommission(value))
   }
 
+  const retrieveCommissionfromAPI = async (date:string, amount:string, currency: string, clientId: number) => {
+    console.log(await getCommission({ date: date, amount: amount, currency: currency, client_id: clientId }))
+  }
+
   return (
     <Formik
         initialValues={{
@@ -49,6 +55,8 @@ const FormComponent: React.FC = () => {
         onSubmit={(values: tFormValues, actions: FormikHelpers<tFormValues>) => {
           console.log(values)
           onSetComission('hello')
+          retrieveCommissionfromAPI(values.date.split('T')[0], values.amount, values.currency, Number(values.client_id))
+
           // actions.setSubmitting(false)
           // actions.resetForm()
         }}
@@ -67,7 +75,7 @@ const FormComponent: React.FC = () => {
                 <Input name="amount" placeholder={'1'} addonAfter={selectAfter} disabled={props.isSubmitting}/>
               </FormItem>
               <FormItem name="date" label="Transfer Date" >
-                <DatePicker name='date' disabled={props.isSubmitting}/>
+                <DatePicker name='date' format='YYYY-MM-DD' disabled={props.isSubmitting}/>
               </FormItem>
 
               <Row style={{ marginTop: 60 }}>
