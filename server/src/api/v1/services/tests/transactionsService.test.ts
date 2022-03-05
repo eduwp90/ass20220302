@@ -1,5 +1,5 @@
-const { mongoose } = require('../../../../config/DatabaseConfig')
-const { findMonthTransactions } = require('../transactionsService')
+import  mongoose  from '../../../../config/DatabaseConfig'
+import { findMonthTransactions } from '../transactionsService'
 
 beforeAll((done) => {
   mongoose.connection.on('connected', () => {
@@ -34,6 +34,7 @@ describe('findMonthTransactions tests', function () {
 
   it('Logs error when invalid args', async () => {
     jest.spyOn(console, 'error')
+    // @ts-ignore
     await findMonthTransactions('ed', '2021-13-05')
 
     expect(console.error).toHaveBeenCalled()
